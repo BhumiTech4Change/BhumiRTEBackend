@@ -57,17 +57,16 @@ router.post('/signup/',function(req,res,next){
   }
 });
 
-router.get('/forgotPassword', function (req, res, next) {
+router.get('/forgotPassword/:email', function (req, res, next) {
   async.waterfall([
     function(done) {
-
       crypto.randomBytes(20, function(err, buf) {
         var token = buf.toString('hex');
         done(err, token);
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email }, function(err, user) {
+      User.findOne({ email: req.params.email }, function(err, user) {
         if (!user) {
           res.json({'success': false});
         }
@@ -85,7 +84,7 @@ router.get('/forgotPassword', function (req, res, next) {
         service: 'SendGrid',
         auth: {
           user: 'bhumirte',
-          pass: 'Idontknowmypass'
+          pass: 'Idontknowmypass123'
         }
       });
       var mailOptions = {
@@ -98,7 +97,7 @@ router.get('/forgotPassword', function (req, res, next) {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        
+        // Done sending the mail
       });
     }
   ], function(err) {
@@ -107,15 +106,13 @@ router.get('/forgotPassword', function (req, res, next) {
   });
 });
 
-app.get('/reset/:token', function(req, res) {
+router.get('/reset/:token', function(req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
     if (!user) {
-      
       return res.redirect('/forgot');
     }
-    res.render('reset', {
-      user: req.user
-    });
+    
+    
   });
 });
 

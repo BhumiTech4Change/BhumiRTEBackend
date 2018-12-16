@@ -6,6 +6,8 @@ var UserSchema = new Schema({
   password:{ type:String, required: true},
   mobile: {type: String, required: true},
   pin: {type: String, required: true},
+  resetPasswordToken: {type: String},
+  resetPasswordExpires: {type: Date} 
 });
 
 UserSchema.pre('save',function(next){
