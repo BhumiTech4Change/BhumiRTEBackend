@@ -7,8 +7,14 @@ var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
 var async = require('async');
 var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+var sgTransport = require('nodemailer-sendgrid-transport');
 
 var config = require('../config/database')
+
+router.get('/', function(req, res, next) {
+  res.send("Server is up and running!");
+})
 
 router.post('/signin/', function(req, res, next) {
   User.findOne({
@@ -58,10 +64,12 @@ router.post('/signup/',function(req,res,next){
 });
 
 router.get('/forgotPassword/:email', function (req, res, next) {
+  console.log(req.params.email);
   async.waterfall([
     function(done) {
       crypto.randomBytes(20, function(err, buf) {
         var token = buf.toString('hex');
+        console.log(token);
         done(err, token);
       });
     },
@@ -73,22 +81,24 @@ router.get('/forgotPassword/:email', function (req, res, next) {
 
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+          
 
-        user.save(function(err) {
-          done(err, token, user);
+        User.update({ _id: user._id}, user, {upsert: true} , function (err, user) {
+            done(err, token);
         });
       });
     },
-    function(token, user, done) {
-      var smtpTransport = nodemailer.createTransport('SMTP', {
+    function(token, done) {
+      var smtpTransport = nodemailer.createTransport({
         service: 'SendGrid',
         auth: {
           user: 'bhumirte',
           pass: 'Idontknowmypass123'
         }
       });
+      
       var mailOptions = {
-        to: user.email,
+        to: req.params.email,
         from: 'passwordreset@bhumirte.com',
         subject: 'Bhumi RTE Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
@@ -96,8 +106,13 @@ router.get('/forgotPassword/:email', function (req, res, next) {
           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
+      console.log(mailOptions);
       smtpTransport.sendMail(mailOptions, function(err) {
         // Done sending the mail
+        if (err) {
+          console.log(err);
+        }
+        res.send("Sent the data");
       });
     }
   ], function(err) {
