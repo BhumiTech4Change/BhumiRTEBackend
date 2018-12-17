@@ -10,6 +10,9 @@ var mongoose = require('mongoose');
 var app = express();
 
 
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
 
 
 app.use(passport.initialize());
@@ -23,6 +26,7 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
 
 app.use('/', indexRouter);
 app.use('/form', passport.authenticate('jwt', {session: false}), protectedRouter);
