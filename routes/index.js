@@ -127,7 +127,6 @@ router.get('/reset/:token', function(req, res) {
     if (!user) {
       return res.send('Invalid token number! if you think this is a mistake, please ask for a email resend');
     }
-    res.send('Problem with the hbs');
     res.render('index', {token: req.params.token});
   });
 });
