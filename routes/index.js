@@ -93,8 +93,8 @@ router.get('/forgotPassword/:email', function (req, res, next) {
       var smtpTransport = nodemailer.createTransport({
         service: 'SendGrid',
         auth: {
-          user: 'bhumirte',
-          pass: 'Idontknowmypass123'
+          user: process.env.SENDGRID_USER,
+          pass: process.env.SENDGRID_PASSWORD
         }
       });
       
@@ -112,8 +112,9 @@ router.get('/forgotPassword/:email', function (req, res, next) {
         // Done sending the mail
         if (err) {
           console.log(err);
+          res.json({'success':false});
         }
-        res.send("Sent the data");
+        res.send({'success': true});
       });
     }
   ], function(err) {
