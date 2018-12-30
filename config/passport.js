@@ -1,3 +1,6 @@
+/*
+ * Passport middleware to authenticate users based on jwt token
+*/
 
 var JwtStrategy = require('passport-jwt').Strategy,
 ExtractJwt = require('passport-jwt').ExtractJwt;

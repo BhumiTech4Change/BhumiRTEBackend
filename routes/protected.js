@@ -1,6 +1,22 @@
+/*
+* Protected route to make a post request to the 
+* google form based upon the obtained user details
+*/
 var express = require('express');
 var router = express.Router();
 var request = require("request");
+
+
+// const declarations
+const email = 'entry.1929656395',
+      phone = 'entry.1596879920',
+      parentName = 'entry.912318726',
+      childName = 'entry.2058139695',
+      dateOfBirth = 'entry.1012257266',
+      pinCode = 'entry.1085914342',
+      certificate = 'entry.1958529600',
+      comment = 'entry.488536056';
+
 
 router.post('/', function(req, res, next) {
 
@@ -8,28 +24,25 @@ router.post('/', function(req, res, next) {
   method: 'POST',
   url: 'https://docs.google.com/forms/d/e/1FAIpQLSdwA-6lR5xERMFHPkW77kyJb4-UZFSawCHfyiQOzFZUxxsBzg/formResponse',
   headers: 
-   { 'Postman-Token': 'a7a5fa34-d29c-4aa1-8c45-7bd01543e4d0',
-     'cache-control': 'no-cache',
+   { 'cache-control': 'no-cache',
      'Content-Type': 'application/x-www-form-urlencoded' },
   form: 
-   { 'entry.1929656395': req.body.email,
-     'entry.1596879920': req.body.phone,
-     'entry.912318726': req.body.parentName,
-     'entry.2058139695': req.body.childName,
-     'entry.1012257266': req.body.dateOfBirth,
-     'entry.1085914342': req.body.pinCode,
-     'entry.1958529600': req.body.certificate,
-     'entry.488536056': req.body.comment }
+   { email : req.body.email,
+     phone : req.body.phone,
+     parentName : req.body.parentName,
+     childName : req.body.childName,
+     dateOfBirth : req.body.dateOfBirth,
+     pinCode : req.body.pinCode,
+     certificate : req.body.certificate,
+     comment : req.body.comment }
   };
   request(options, function (error, response, body) {
     if (error){
       res.json({'success':false, msg:'Error!'})
     } 
-    res.json({'success': true, msg: 'Successfully submitted the response'});
+    res.json({'success': true, msg: 'Successfully submitted the details'});
   });
 
 });
-
-
 
 module.exports = router;
