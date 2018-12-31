@@ -187,7 +187,7 @@ router.post('/reset/', function (req, res) {
           if (err) {
             res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again!"});
           }
-          res.render('index', {token: req.body.token, update:true, msg: "Password is updated, login on the app!"});
+          res.render('index', {updated:true, msg: "Password is updated, login on the app!"});
         })
       });
     });
