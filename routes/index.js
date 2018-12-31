@@ -14,6 +14,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var sgTransport = require('nodemailer-sendgrid-transport');
 var config = require('../config/database');
+var Feedback = require('../models/Feedback');
 
 /*
 * Just a dummy endpoint to test if the server is up
@@ -191,7 +192,68 @@ router.post('/reset/', function (req, res) {
   }})
 });
 
-router.post('/feedback/:email', function(req, res) {
-	
+router.get('/getFeedback/:email/:feedback', function(req, res) {
+  var feedback = new Feedback({
+    email: req.params.email,
+    feedbackText: req.params.feedback
+  });
+
+  var smtpTransport = nodemailer.createTransport({
+    service: 'SendGrid',
+    auth: {
+      user: process.env.SENDGRID_USER,
+      pass: process.env.SENDGRID_PASSWORD
+    }
+  });
+
+  // Create the mail contents
+  var mailOptions = {
+    to: 'prahalathan@bhumi.ngo,deepakchethan@outlook.com,jamal@bhumi.ngo',
+    from: req.params.email,
+    subject: 'Feedback for Bhumi RTE',
+    text: req.params.feedback
+  };
+
+  // Send the generated mail
+  smtpTransport.sendMail(mailOptions, function(err) {
+    // Done sending the mail
+    if (err) {
+      res.json({'success':false, 'msg': 'Server hangup, please try again after sometime'});
+    }
+    feedback.save(function(err, success){
+      if (err) {
+        res.json({'success':false, msg:'Unable to submit feedback, try again after sometime'});
+      }
+      res.json({'success':true, msg:'Successfully submitted, we will get in touch soon!'});
+    }); 
+  });
+
+  
 }); 
+
+// TODO, change this very bad thing
+router.get('/showFeedback/:secretKey', function(req,res) {
+  let secret = process.env.SECRET;
+
+  if (req.params.secretKey === secret) {
+    Feedback.find({}, function(err, feedback) {
+      if (err) {
+        res.send("Error 404");
+      }
+      res.json(feedback);
+    });
+  }
+
+});
+
+router.get('/clearFeedback/:secretKey', function(req, res) {
+  let secret = process.env.SECRET;
+  Feedback.remove({}, function(err, feedback) {
+    if (err) {
+      res.send("Error 404");
+    }
+    res.send("Cleared the feedback logs");
+  });
+
+});
 module.exports = router;
