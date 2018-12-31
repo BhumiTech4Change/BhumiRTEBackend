@@ -144,46 +144,54 @@ router.get('/forgotPassword/:email', function (req, res, next) {
 * The endpoint for the user with the input field to reset the password
 */
 router.get('/reset/:token', function(req, res) {
+  
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
     if (!user) {
-      return res.send('Invalid token number! if you think this is a mistake, please ask for a email resend');
+      res.render('index', {token: req.params.token, err:true, msg: "Invalid token number, please choose the latest mail to reset the password if you requested more than once"});
     }
     res.render('index', {token: req.params.token});
   });
 });
 
+/*
+* The logic for password validation and update
+*/
 router.post('/reset/', function (req, res) {
+  var pattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+  var isStrong = pattern.test(req.body.newpassword);
   User.findOne({resetPasswordToken: req.body.token}, function (err, user) {
     if (err) {
-      res.send('Error resetting the password');
+      res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again"});
     }
-    if (req.body.newpassword !== req.body.retypepassword) {
-      res.send('The passwords does not match!');
+    else if (req.body.newpassword !== req.body.retypepassword) {
+      res.render('index', {token: req.body.token, err:true, msg: "The passwords don't match!"});
     }
+    else if (!isStrong) {
+      res.render('index', {token: req.body.token, err:true, msg: "Passwords should have atleast one lower-case, one upper-case,\
+      one special character and one number. Should also be longer than 8 characters"});
+    }
+    else {
     // Encrypt the password
     bcrypt.genSalt(10, function(err,salt){
       if (err){
-        res.send('Error updating password');
+        res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again!"});
       }
       bcrypt.hash(req.body.newpassword, salt, null, function(err,hash){
         if (err){
-          res.send('Error updating password');
+          res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again!"});
         }
         user.password = hash;
         user.resetPasswordExpires = null;
         user.resetPasswordToken = null;
         User.updateOne({_id: user._id}, user, {upsert:true},function(err, usr) {
           if (err) {
-            res.send('Error updating password');
+            res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again!"});
           }
-          res.send('Updated the password, login now!');
+          res.render('index', {token: req.body.token, update:true, msg: "Password is updated, login on the app!"});
         })
       });
     });
-    
-    
-    
-  })
+  }})
 });
 
 module.exports = router;
