@@ -208,7 +208,7 @@ router.get('/getFeedback/:email/:feedback', function(req, res) {
 
   // Create the mail contents
   var mailOptions = {
-    to: 'prahalathan@bhumi.ngo,deepakchethan@outlook.com,jamal@bhumi.ngo',
+    to: 'deepakchethan@outlook.com,prahalathan@bhumi.ngo,jamal@bhumi.ngo',
     from: req.params.email,
     subject: 'Feedback for Bhumi RTE',
     text: req.params.feedback
