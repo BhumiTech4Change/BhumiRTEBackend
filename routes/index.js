@@ -92,7 +92,7 @@ router.get('/forgotPassword/:email', function (req, res, next) {
     function(token, done) {
       User.findOne({ email: req.params.email }, function(err, user) {
         if (!user) {
-          res.json({'success': false});
+          res.json({'success': false, 'msg':'This user is not registered'});
         }
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
@@ -157,8 +157,6 @@ router.get('/reset/:token', function(req, res) {
 * The logic for password validation and update
 */
 router.post('/reset/', function (req, res) {
-  var pattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-  var isStrong = pattern.test(req.body.newpassword);
   User.findOne({resetPasswordToken: req.body.token}, function (err, user) {
     if (err) {
       res.render('index', {token: req.body.token, err:true, msg: "Server is busy, please try again"});
@@ -166,9 +164,8 @@ router.post('/reset/', function (req, res) {
     else if (req.body.newpassword !== req.body.retypepassword) {
       res.render('index', {token: req.body.token, err:true, msg: "The passwords don't match!"});
     }
-    else if (!isStrong) {
-      res.render('index', {token: req.body.token, err:true, msg: "Passwords should have atleast one lower-case, one upper-case,\
-      one special character and one number. Should also be longer than 8 characters"});
+    else if (req.body.newpassword.length < 8) {
+      res.render('index', {token: req.body.token, err:true, msg: "Password must be atleast 8 characters long"});
     }
     else {
     // Encrypt the password
@@ -194,4 +191,7 @@ router.post('/reset/', function (req, res) {
   }})
 });
 
+router.post('/feedback/:email', function(req, res) {
+	
+}); 
 module.exports = router;
