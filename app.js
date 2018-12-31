@@ -6,8 +6,10 @@ var config = require('./config/database');
 var indexRouter = require('./routes/index');
 var protectedRouter = require('./routes/protected');
 var mongoose = require('mongoose');
+var dotenv = require('dotenv');
 var app = express();
 
+dotenv.load();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
