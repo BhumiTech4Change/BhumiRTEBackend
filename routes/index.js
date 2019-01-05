@@ -120,11 +120,11 @@ router.get('/forgotPassword/:email', function (req, res, next) {
       var mailOptions = {
         to: req.params.email,
         from: 'support@bhumi.ngo',
-        subject: 'Bhumi RTE Password Reset',
-        text: 'Hello, \n\n You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+        subject: 'Bhumi RTE App Password Reset',
+        text: 'Hello, \n\n'+'You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' + 'Thank You'
       };
 
       // Send the generated mail
@@ -209,6 +209,7 @@ router.get('/getFeedback/:email/:feedback', function(req, res) {
   // Create the mail contents
   var mailOptions = {
     to: 'deepakchethan@outlook.com,prahalathan@bhumi.ngo,jamal@bhumi.ngo',
+    //to: 'deepakchethan@outlook.com',
     from: req.params.email,
     subject: 'Feedback for Bhumi RTE',
     text: req.params.feedback
