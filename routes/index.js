@@ -225,7 +225,7 @@ router.get('/getFeedback/:email/:feedback', function(req, res) {
       if (err) {
         res.json({'success':false, msg:'Unable to submit feedback, try again after sometime'});
       }
-      res.json({'success':true, msg:'Successfully submitted, we will get in touch soon!'});
+      res.json({'success':true, msg:'Successfully submitted!'});
     }); 
   });
 
