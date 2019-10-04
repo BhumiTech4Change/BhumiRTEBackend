@@ -1,2 +1,2 @@
 # BhumiRTEBackend
-RESTful API for BhumiRTE-client App
+RESTful API for BhumiRTE-client App.
