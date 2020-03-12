@@ -3,7 +3,7 @@
 */
 module.exports = {
   'secret':'nodeauthsecret',
-  'database': 'mongodb://localhost:27017/bhumi', 
+  'database': 'mongodb://localhost:27017/users', 
   'connection':null,
   'useNewUrlParser': true
 };
