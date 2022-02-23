@@ -111,8 +111,8 @@ router.get('/forgotPassword/:email', function (req, res, next) {
       var smtpTransport = nodemailer.createTransport({
         service: 'SendGrid',
         auth: {
-          user: process.env.SENDGRID_USER,
-          pass: process.env.SENDGRID_PASSWORD
+          user: 'apikey',
+          pass: process.env.SENDGRID_SECRET,
         }
       });
 
@@ -201,15 +201,14 @@ router.get('/getFeedback/:email/:feedback', function(req, res) {
   var smtpTransport = nodemailer.createTransport({
     service: 'SendGrid',
     auth: {
-      user: process.env.SENDGRID_USER,
-      pass: process.env.SENDGRID_PASSWORD
+      user: 'apikey',
+      pass: process.env.SENDGRID_SECRET,
     }
   });
 
   // Create the mail contents
   var mailOptions = {
     to: 'deepakchethan@outlook.com,prahalathan@bhumi.ngo,jamal@bhumi.ngo',
-    //to: 'deepakchethan@outlook.com',
     from: req.params.email,
     subject: 'Feedback for Bhumi RTE',
     text: req.params.feedback
