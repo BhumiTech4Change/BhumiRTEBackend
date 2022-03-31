@@ -19,7 +19,7 @@ router.post('/', function (req, res, next) {
       'entry.912318726': req.body.parentName,
       'entry.2058139695': req.body.childName,
       'entry.1012257266': req.body.dateOfBirth,
-      'entry.1085914342': req.body.pinCode,
+      'entry.1085914342': req.body.pin,
       'entry.1958529600': req.body.certificate,
       'entry.488536056': req.body.comment
     }
