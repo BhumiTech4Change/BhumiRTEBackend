@@ -10,6 +10,7 @@ const cors = require('cors');
 const app = express();
 
 require('dotenv').config();
+mongoose.connect(config.database, () => console.log('Connected to the database'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-mongoose.connect(config.database, {useNewUrlParser: true, useUnifiedTopology: true});
+
 app.use(cors({
   origin: '*', optionsSuccessStatus: 200 // some legacy browsers (IE11, constious SmartTVs) choke on 204
 }));
@@ -30,8 +31,13 @@ app.use(require('body-parser').json());
 app.use(require('body-parser').urlencoded({extended: true}));
 
 
+const authCallback = function (err, user) {
+  if (!user) {
+    return console.log(`Authentication successful for ${user}`);
+  }
+}
 app.use('/', indexRouter);
-app.use('/form', passport.authenticate('jwt', {session: false}), protectedRouter);
+app.use('/form', passport.authenticate('jwt', {session: false}, authCallback), protectedRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
