@@ -1,15 +1,16 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var passport = require('passport');
-var config = require('./config/database');
-var indexRouter = require('./routes/index');
-var protectedRouter = require('./routes/protected');
-var mongoose = require('mongoose');
-var dotenv = require('dotenv');
-var app = express();
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const config = require('./config/database');
+const indexRouter = require('./routes/index');
+const protectedRouter = require('./routes/protected');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
 
-dotenv.load();
+require('dotenv').config();
+mongoose.connect(config.database, () => console.log('Connected to the database'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,27 +19,33 @@ app.set('view engine', 'hbs');
 
 app.use(passport.initialize());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-mongoose.connect(config.database,  { useNewUrlParser: true, useUnifiedTopology: true } );
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+
+app.use(cors({
+  origin: '*', optionsSuccessStatus: 200 // some legacy browsers (IE11, constious SmartTVs) choke on 204
+}));
+
+app.use(require('body-parser').json());
+app.use(require('body-parser').urlencoded({extended: true}));
 
 
+const authCallback = function (err, user) {
+  if (!user) {
+    return console.log(`Authentication successful for ${user}`);
+  }
+}
 app.use('/', indexRouter);
-app.use('/form', passport.authenticate('jwt', {session: false}), protectedRouter);
+app.use('/form', passport.authenticate('jwt', {session: false}, authCallback), protectedRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.send('Error 404');
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
