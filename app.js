@@ -17,7 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 
-app.use(passport.initialize());
+app.use(passport.initialize({}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -27,12 +27,8 @@ app.use(cors({
   origin: '*', optionsSuccessStatus: 200 // some legacy browsers (IE11, constious SmartTVs) choke on 204
 }));
 
-app.use(require('body-parser').json());
-app.use(require('body-parser').urlencoded({extended: true}));
-
-
 const authCallback = function (err, user) {
-  if (!user) {
+  if (user) {
     return console.log(`Authentication successful for ${user}`);
   }
 }
