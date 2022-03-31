@@ -6,7 +6,6 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt-nodejs');
 const passport = require('passport');
-require('../config/passport')(passport);
 const jwt = require('jsonwebtoken');
 const async = require('async');
 const crypto = require('crypto');
@@ -14,6 +13,7 @@ const nodemailer = require('nodemailer');
 const config = require('../config/database');
 const Feedback = require('../models/Feedback');
 
+require('../config/passport')(passport);
 /*
 * Just a dummy endpoint to test if the server is up
 */
